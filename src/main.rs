@@ -1,4 +1,4 @@
-use bevy::{prelude::*, sprite::MaterialMesh2dBundle, window::PrimaryWindow};
+use bevy::{prelude::*, window::PrimaryWindow};
 
 fn main() {
     App::new()
@@ -10,7 +10,7 @@ fn main() {
         .run();
 }
 
-const TILE_SIZE: f32 = 64.0;
+const TILE_SIZE: f32 = 32.0;
 
 #[derive(Component)]
 pub struct SnakeHead {}
@@ -21,64 +21,37 @@ pub struct Food {}
 #[derive(Component)]
 pub struct Grid {}
 
-// Grid for easy viewing of tiles
-pub fn draw_grid(
-    mut commands: Commands,
-    window_query: Query<&Window, With<PrimaryWindow>>,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
-) {
-    let window = window_query.get_single().unwrap();
-
-    // Painful amount of casting
-    for x in (0..window.width() as i32).step_by(TILE_SIZE as usize) {
-        for y in (0..window.height() as i32).step_by(TILE_SIZE as usize) {
-            commands.spawn((
-                MaterialMesh2dBundle {
-                    mesh: meshes
-                        .add(shape::Quad::new(Vec2::new(TILE_SIZE, TILE_SIZE)).into())
-                        .into(),
-                    material: materials.add(ColorMaterial::from(Color::WHITE)),
-                    transform: Transform::from_xyz(x as f32, y as f32, 1.0),
-                    ..default()
-                },
-                Grid {},
-            ));
-        }
-    }
-}
-
-pub fn spawn_snake_head(
-    mut commands: Commands,
-    window_query: Query<&Window, With<PrimaryWindow>>,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
-) {
-    let window = window_query.get_single().unwrap();
-
+pub fn spawn_snake_head(mut commands: Commands) {
     commands.spawn((
-        MaterialMesh2dBundle {
-            mesh: meshes
-                .add(shape::Quad::new(Vec2::new(TILE_SIZE, TILE_SIZE)).into())
-                .into(),
-            material: materials.add(ColorMaterial::from(Color::PURPLE)),
-            transform: Transform::from_translation(Vec3::new(
-                window.height() / 2.0,
-                window.width() / 2.0,
-                1.0,
-            )),
+        SpriteBundle {
+            sprite: Sprite {
+                color: Color::GREEN,
+                ..default()
+            },
+            transform: Transform {
+                scale: Vec3::new(TILE_SIZE, TILE_SIZE, TILE_SIZE),
+                ..default()
+            },
             ..default()
         },
         SnakeHead {},
     ));
 }
 
-// Basic 2D Camera
-pub fn spawn_camera(mut commands: Commands, window_query: Query<&Window, With<PrimaryWindow>>) {
-    let window = window_query.get_single().unwrap();
-
-    commands.spawn(Camera2dBundle {
-        transform: Transform::from_xyz(window.width() / 2.0, window.height() / 2.0, 0.0),
-        ..default()
-    });
+pub fn spawn_camera(mut commands: Commands) {
+    commands.spawn(Camera2dBundle::default());
 }
+
+// Movement
+// pub fn movement(
+//     mut player_query: Query<&mut Transform, With<SnakeHead>>,
+//     window_query: Query<&Window, With<PrimaryWindow>>,
+// ) {
+//     let Ok(mut transform) = player_query.get_single_mut() else {
+//         return;
+//     };
+//
+//     let window = window_query.get_single().unwrap();
+//
+//     let mut translation = transform.translation;
+// }
