@@ -7,6 +7,7 @@ fn main() {
         .add_startup_system(spawn_camera)
         .add_startup_system(spawn_snake_head)
         // .add_startup_system(draw_grid)
+        .add_system(movement)
         .run();
 }
 
@@ -43,15 +44,17 @@ pub fn spawn_camera(mut commands: Commands) {
 }
 
 // Movement
-// pub fn movement(
-//     mut player_query: Query<&mut Transform, With<SnakeHead>>,
-//     window_query: Query<&Window, With<PrimaryWindow>>,
-// ) {
-//     let Ok(mut transform) = player_query.get_single_mut() else {
-//         return;
-//     };
-//
-//     let window = window_query.get_single().unwrap();
-//
-//     let mut translation = transform.translation;
-// }
+pub fn movement(
+    mut snake_head_query: Query<&mut Transform, With<SnakeHead>>,
+    window_query: Query<&Window, With<PrimaryWindow>>,
+) {
+    for mut transform in snake_head_query.iter_mut() {
+        transform.translation.y += 2.0;
+    }
+
+    // let window = window_query.get_single().unwrap();
+
+    // let Ok(mut transform) = snake_head_query.get_single_mut() else {
+    //     return;
+    // };
+}
